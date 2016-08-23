@@ -9,77 +9,81 @@ var path = require('path');
 var program = require('commander');
 var pkg = require('../package.json');
  
-program.version(pkg.version);
+program.version(pkg.version)
+  .option('-K --key <key>')
+  .option('--alts <alts>');
 
 program
   .command('* <input-path>')
   .description('Create bitmask implementation.')
   .action(function(inputPath) {
-    console.log('inputPath');
-    console.log(inputPath);
+    var key = program.key;
+    var alts = program.alts.split(',');
 
     var inputDir = path.dirname(inputPath);
     var filename = path.parse(inputPath).name;
     var bitmaskSourceDataPath = path.join(inputDir, filename + '.bitmasker.json');
-    console.log('bitmaskSourceDataPath');
-    console.log(bitmaskSourceDataPath);
 //    if (err) {
 //      console.error(err);
 //      process.exit(1);
 //    }
 
-    var typeMappings = JSON.parse(fs.readFileSync(inputPath, {encoding: 'utf8'}));;
+    var dataToBitmaskify = JSON.parse(fs.readFileSync(inputPath, {encoding: 'utf8'}));;
 
-    var inputTypesByParser = _.toPairs(
-        typeMappings
-        .reduce(function(acc, typeMapping) {
-          var parser = typeMapping.parser;
-          acc[parser] = acc[parser] || [];
-          acc[parser] = _.union(acc[parser], typeMapping.contentTypes, typeMapping.extensions)
-          .filter(function(inputType) {
-            return inputType !== parser;
+    var inputsByName = _.toPairs(
+        dataToBitmaskify
+        .reduce(function(acc, dataItemToBitmaskify) {
+          var name = dataItemToBitmaskify[key];
+          acc[name] = acc[name] || [];
+          acc[name] = _.union(
+              acc[name],
+              alts.reduce(function(acc, alt) {
+                return acc.concat(dataItemToBitmaskify[alt]);
+              }, [])
+          )
+          .filter(function(input) {
+            return input !== name;
           })
-          .concat([parser]);
+          .concat([name]);
           return acc;
         }, {})
     )
     .map(function(pair) {
-      var parser = pair[0];
-      var inputTypes = pair[1];
+      var name = pair[0];
+      var inputs = pair[1];
       return {
-        parser: parser,
-        inputTypes: inputTypes
+        name: name,
+        inputs: inputs
       };
     });
 
-    var orderedTags = inputTypesByParser.reduce(function(acc, item) {
-      return acc.concat(_.reverse(item.inputTypes));
+    var orderedTags = inputsByName.reduce(function(acc, item) {
+      return acc.concat(_.reverse(item.inputs));
     }, [])
     .map(function(x) {
       return hashTiny(x);
     });
 
     if (_.uniq(orderedTags).length !== orderedTags.length) {
-      throw new Error('Hash collision for inputTypes!');
+      throw new Error('Hash collision for inputs!');
     }
 
-    var inputTypeToParserBitmaskMappings = inputTypesByParser
+    var inputToNameBitmaskMappings = inputsByName
     .map(function(x) {
-      var parser = x.parser;
-      var inputTypes = x.inputTypes;
+      var name = x.name;
+      var inputs = x.inputs;
 
       return {
-        parser: parser,
-        tags : new Bitmask(inputTypes).m
+        name: name,
+        t: new Bitmask(inputs).m
       };
     });
-
     
     fs.writeFileSync(
         bitmaskSourceDataPath,
         JSON.stringify({
-          orderedTags: orderedTags,
-          masks: inputTypeToParserBitmaskMappings
+          o: orderedTags,
+          m: inputToNameBitmaskMappings
         }),
         {encoding: 'utf8'}
     );

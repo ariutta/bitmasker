@@ -1,47 +1,25 @@
 var _ = require('lodash');
 var assert = require('assert');
-// notice bitmask here is NOT the NPM bitmask package
-var Bitmask = require('bitmask');
+var Bitmasker = require('../lib/main.js');
 var fs = require('fs');
-var hashTiny = require('../lib/hash-tiny.js');
 var path = require('path');
 
-var bitmaskSourceDataPath = path.join(
+var that = this;
+var parserContentTypeBitmaskerDataPath = path.join(
     __dirname,
     'input.bitmasker.json'
 );
-var bitmaskSourceData = require(bitmaskSourceDataPath);
-var orderedTags = bitmaskSourceData.orderedTags;
-var masks = bitmaskSourceData.masks;
+var parserContentTypeBitmaskerData = require(parserContentTypeBitmaskerDataPath);
+var parserContentTypeBitmasker = new Bitmasker(parserContentTypeBitmaskerData);
 
-var mask = new Bitmask();
-assert(_.isEmpty(Bitmask.inspect(mask)));
+assert(parserContentTypeBitmasker.filter('application/json')[0] === 'application/json');
 
-orderedTags.forEach(function(tag) {
-  new Bitmask(tag);
-});
+assert(parserContentTypeBitmasker.filter('text/csv')[0] === 'text/csv');
+assert(parserContentTypeBitmasker.filter('csv')[0] === 'text/csv');
 
-assert(!_.isEmpty(Bitmask.inspect(mask)));
+assert(parserContentTypeBitmasker.filter('application/xml')[0] === 'application/xml');
+assert(parserContentTypeBitmasker.filter('xml')[0] === 'application/xml');
 
-function getParserContentTypeFromInputType(inputType) {
-  var hashed = hashTiny(inputType);
-  var maskForHasInputType = new Bitmask(hashed);
-  var matches = maskForHasInputType.filter(masks, 'any', 'tags');
-  assert(matches.length <= 1);
-  if (matches.length === 1) {
-    return matches[0].parser;
-  } else {
-    return 'application/octet-stream';
-  }
-}
+console.log('All Pass');
 
-assert(getParserContentTypeFromInputType('json') === 'application/json');
-assert(getParserContentTypeFromInputType('application/json') === 'application/json');
-
-assert(getParserContentTypeFromInputType('text/csv') === 'text/csv');
-assert(getParserContentTypeFromInputType('csv') === 'text/csv');
-
-assert(getParserContentTypeFromInputType('application/xml') === 'application/xml');
-assert(getParserContentTypeFromInputType('xml') === 'application/xml');
-
-fs.unlinkSync(bitmaskSourceDataPath);
+//fs.unlinkSync(parserContentTypeBitmaskerDataPath);

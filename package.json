@@ -10,7 +10,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node bin/cli.js ./test/input.json --key=parser --alts=contentTypes,extensions && node ./test/test.js",
+    "test:full": "node bin/cli.js ./test/input.json --key=parser --alts=contentTypes,extensions && node ./test/test.js && rm ./test/input.bitmasker.json"
   },
   "repository": {
     "type": "git",
