@@ -1,0 +1,93 @@
+[
+  {
+    "extensions": [
+      "csv"
+    ],
+    "contentTypes": [
+      "text/csv"
+    ],
+    "parser": "text/csv"
+  },
+  {
+    "extensions": [
+      "n3"
+    ],
+    "contentTypes": [
+      "text/n3"
+    ],
+    "parser": "text/n3"
+  },
+  {
+    "extensions": [
+      "ttl"
+    ],
+    "contentTypes": [
+      "text/turtle",
+      "application/x-turtle"
+    ],
+    "parser": "text/n3"
+  },
+  {
+    "extensions": [
+      "nq"
+    ],
+    "contentTypes": [
+      "application/n-quads"
+    ],
+    "parser": "text/n3"
+  },
+  {
+    "extensions": [
+      "trig"
+    ],
+    "contentTypes": [
+      "application/trig"
+    ],
+    "parser": "text/n3"
+  },
+  {
+    "extensions": [
+      "json"
+    ],
+    "contentTypes": [
+      "application/json"
+    ],
+    "parser": "application/json"
+  },
+  {
+    "extensions": [
+      "ndjson"
+    ],
+    "contentTypes": [
+      "application/x-ndjson",
+      "application/ndjson"
+    ],
+    "parser": "application/x-ndjson"
+  },
+  {
+    "extensions": [
+      "tsv"
+    ],
+    "contentTypes": [
+      "text/tab-separated-values"
+    ],
+    "parser": "text/tab-separated-values"
+  },
+  {
+    "extensions": [],
+    "contentTypes": [
+      "application/octet-stream"
+    ],
+    "parser": "application/octet-stream"
+  },
+  {
+    "extensions": [
+      "xml"
+    ],
+    "contentTypes": [
+      "application/xml",
+      "text/xml"
+    ],
+    "parser": "application/xml"
+  }
+]

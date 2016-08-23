@@ -1,0 +1,36 @@
+{
+  "name": "bitmasker",
+  "version": "1.0.0",
+  "description": "Utils for making and using bitmasks.",
+  "main": "index.js",
+  "bin": {
+    "bitmasker": "cli.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ariutta/bitmasker.git"
+  },
+  "keywords": [
+    "bitmask",
+    "filter",
+    "match"
+  ],
+  "author": "Anders Riutta",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ariutta/bitmasker/issues"
+  },
+  "homepage": "https://github.com/ariutta/bitmasker#readme",
+  "dependencies": {
+    "base58": "^0.1.0",
+    "bitmask": "young-steveo/bitmask.js#345d7088bc2f52a87a0e02c2a89b5f40f03c1d9d",
+    "commander": "^2.9.0",
+    "lodash": "^4.15.0"
+  }
+}
