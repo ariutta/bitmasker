@@ -1,24 +1,28 @@
 #!/usr/bin/env node
  
 var _ = require('lodash');
+var Base58 = require('base58');
 // notice bitmask here is NOT the NPM bitmask package
 var Bitmask = require('bitmask');
-var hashTiny = require('../lib/hash-tiny.js');
+var jsCrc = require('js-crc');
 var fs = require('fs');
 var path = require('path');
 var program = require('commander');
 var pkg = require('../package.json');
+
+var crc16 = jsCrc.crc16;
+var crc32 = jsCrc.crc32;
  
 program.version(pkg.version)
-  .option('-K --key <key>')
-  .option('--alts <alts>');
+  .option('-P --preferred-key <preferred-key>')
+  .option('-A --alternate-keys <alternate-keys>');
 
 program
   .command('* <input-path>')
   .description('Create bitmask implementation.')
   .action(function(inputPath) {
-    var key = program.key;
-    var alts = program.alts.split(',');
+    var preferredKey = program.preferredKey || 'preferred';
+    var alternateKeys = (program.alternateKeys || 'alternates').split(',');
 
     var inputDir = path.dirname(inputPath);
     var filename = path.parse(inputPath).name;
@@ -30,15 +34,15 @@ program
 
     var dataToBitmaskify = JSON.parse(fs.readFileSync(inputPath, {encoding: 'utf8'}));;
 
-    var inputsByName = _.toPairs(
+    var inputsByKey = _.toPairs(
         dataToBitmaskify
         .reduce(function(acc, dataItemToBitmaskify) {
-          var name = dataItemToBitmaskify[key];
+          var name = dataItemToBitmaskify[preferredKey];
           acc[name] = acc[name] || [];
           acc[name] = _.union(
               acc[name],
-              alts.reduce(function(acc, alt) {
-                return acc.concat(dataItemToBitmaskify[alt]);
+              alternateKeys.reduce(function(acc, alternateKey) {
+                return acc.concat(dataItemToBitmaskify[alternateKey]);
               }, [])
           )
           .filter(function(input) {
@@ -57,33 +61,46 @@ program
       };
     });
 
-    var orderedTags = inputsByName.reduce(function(acc, item) {
+    var seed = '16';
+
+    var orderedTags = inputsByKey.reduce(function(acc, item) {
       return acc.concat(_.reverse(item.inputs));
     }, [])
     .map(function(x) {
-      return hashTiny(x);
+      return crc16(x);
     });
+
+    if (_.uniq(orderedTags).length !== orderedTags.length) {
+      seed = '32';
+      orderedTags = inputsByKey.reduce(function(acc, item) {
+        return acc.concat(_.reverse(item.inputs));
+      }, [])
+      .map(function(x) {
+        return crc32(x);
+      });
+    }
 
     if (_.uniq(orderedTags).length !== orderedTags.length) {
       throw new Error('Hash collision for inputs!');
     }
 
-    var inputToNameBitmaskMappings = inputsByName
+    var inputToKeyBitmaskData = inputsByKey
     .map(function(x) {
       var name = x.name;
       var inputs = x.inputs;
 
       return {
-        name: name,
-        t: new Bitmask(inputs).m
+        n: name,
+        t: Base58.encode(new Bitmask(inputs).m)
       };
     });
-    
+
     fs.writeFileSync(
         bitmaskSourceDataPath,
         JSON.stringify({
+          s: seed,
           o: orderedTags,
-          m: inputToNameBitmaskMappings
+          r: inputToKeyBitmaskData
         }),
         {encoding: 'utf8'}
     );

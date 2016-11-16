@@ -89,5 +89,69 @@
       "text/xml"
     ],
     "parser": "application/xml"
+  },
+  {
+    "extensions": [
+      "png"
+    ],
+    "contentTypes": [
+      "image/png"
+    ],
+    "parser": "image/png"
+  },
+  {
+    "extensions": [
+      "bmp"
+    ],
+    "contentTypes": [
+      "image/bmp"
+    ],
+    "parser": "image/bmp"
+  },
+  {
+    "extensions": [
+      "jpg",
+      "jpeg"
+    ],
+    "contentTypes": [
+      "image/jpeg"
+    ],
+    "parser": "image/jpeg"
+  },
+  {
+    "extensions": [
+      "gif"
+    ],
+    "contentTypes": [
+      "image/gif"
+    ],
+    "parser": "gif"
+  },
+  {
+    "extensions": [
+      "svg"
+    ],
+    "contentTypes": [
+      "image/svg+xml"
+    ],
+    "parser": "image/svg+xml"
+  },
+  {
+    "extensions": [
+      "tiff"
+    ],
+    "contentTypes": [
+      "image/tiff"
+    ],
+    "parser": "image/tiff"
+  },
+  {
+    "extensions": [
+      "emf"
+    ],
+    "contentTypes": [
+      "image/emf"
+    ],
+    "parser": "image/emf"
   }
 ]

@@ -5,21 +5,23 @@ var fs = require('fs');
 var path = require('path');
 
 var that = this;
-var parserContentTypeBitmaskerDataPath = path.join(
+var bitmaskerForContentTypesDataPath = path.join(
     __dirname,
     'input.bitmasker.json'
 );
-var parserContentTypeBitmaskerData = require(parserContentTypeBitmaskerDataPath);
-var parserContentTypeBitmasker = new Bitmasker(parserContentTypeBitmaskerData);
+var bitmaskerForContentTypesData = require(bitmaskerForContentTypesDataPath);
+var bitmaskerForContentTypes = new Bitmasker(bitmaskerForContentTypesData);
 
-assert(parserContentTypeBitmasker.filter('application/json')[0] === 'application/json');
+assert(bitmaskerForContentTypes.filter('application/json')[0] === 'application/json');
 
-assert(parserContentTypeBitmasker.filter('text/csv')[0] === 'text/csv');
-assert(parserContentTypeBitmasker.filter('csv')[0] === 'text/csv');
+assert(bitmaskerForContentTypes.filter('text/csv')[0] === 'text/csv');
+assert(bitmaskerForContentTypes.filter('csv')[0] === 'text/csv');
 
-assert(parserContentTypeBitmasker.filter('application/xml')[0] === 'application/xml');
-assert(parserContentTypeBitmasker.filter('xml')[0] === 'application/xml');
+assert(bitmaskerForContentTypes.filter('application/xml')[0] === 'application/xml');
+assert(bitmaskerForContentTypes.filter('xml')[0] === 'application/xml');
+
+assert(bitmaskerForContentTypes.filter('najsdfnvashbdcjvashbdc').length === 0);
 
 console.log('All Pass');
 
-//fs.unlinkSync(parserContentTypeBitmaskerDataPath);
+//fs.unlinkSync(bitmaskerForContentTypesDataPath);
